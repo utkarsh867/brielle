@@ -1,4 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:vibration/vibration.dart';
+
+class HomePopupMenu{
+  const HomePopupMenu({this.title, this.icon});
+  final String title;
+  final IconData icon;
+}
+
+const List<HomePopupMenu> menuItems = const <HomePopupMenu>[
+  const HomePopupMenu(title: 'MenuItem1', icon: Icons.home)
+];
 
 void main() => runApp(MyApp());
 
@@ -21,7 +32,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
   final String title;
 
   @override
@@ -36,6 +46,18 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold),),
         elevation: 0,
+        actions: <Widget>[
+          PopupMenuButton<HomePopupMenu>(
+            itemBuilder: (BuildContext context){
+              return menuItems.map((HomePopupMenu _item) {
+                return PopupMenuItem<HomePopupMenu>(
+                  value: _item,
+                  child: Text(_item.title),
+                );
+              }).toList();
+            },
+          )
+        ],
       ),
       body: Center(
       ),
@@ -44,8 +66,19 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             const Padding(padding: EdgeInsets.all(40.0)),
             new ListTile(
-              title: const Text("Hello"),
+              leading: const Icon(Icons.home),
+              title: const Text("Home"),
               onTap: () {},
+            ),
+            new ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text("Settings"),
+              onTap: () async {
+                // TODO: Change the onTap behaviour to something meaningful
+                if (await Vibration.hasVibrator()){
+                  Vibration.vibrate(duration: 10);
+                }
+              },
             )
           ],
         ),
