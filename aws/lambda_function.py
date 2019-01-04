@@ -2,6 +2,7 @@ import json
 import os
 import base64
 import boto3
+import uuid
 from contextlib import closing
 
 
@@ -12,7 +13,7 @@ def lambda_handler(event, context):
     print(givenText)
     client = boto3.client('polly')
     data = client.synthesize_speech(OutputFormat='mp3', Text= givenText, VoiceId='Joanna')
-    postId = "file"
+    postId = str(uuid.uuid1())
     if "AudioStream" in data:
         with closing(data["AudioStream"]) as stream:
             output = os.path.join("/tmp/", postId)
@@ -26,6 +27,8 @@ def lambda_handler(event, context):
       
     preSignedUrl = s3.generate_presigned_url(ClientMethod='get_object',Params={'Bucket': os.environ['BUCKET'],'Key': postId + ".mp3"})
     
+    os.remove('/tmp/' + postId)
+
     response = {
         'statusCode': 200,
         'headers': {
