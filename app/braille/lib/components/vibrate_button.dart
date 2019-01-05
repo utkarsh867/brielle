@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 
+
+
 class VibrateButton extends StatelessWidget{
   final vib;
   VibrateButton(this.vib);

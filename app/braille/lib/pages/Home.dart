@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:speech_recognition/speech_recognition.dart';
 import 'package:braille_1/functions/letterLogic.dart';
 import 'braille_letter.dart';
+import 'test.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -110,12 +111,21 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 if (_speechRecognitionAvailable && !_isListening) {
                   start();
-                } else {
-                  activateSpeechRecognizer();
                 }
               },
               child: Text('Listen'),
             ),
+            RaisedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Test(0, 0, widget.title),
+                  ),
+                );
+              },
+              child: Text('Test'),
+            )
           ],
         ),
       ),

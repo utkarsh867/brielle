@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayer/audioplayer.dart';
-import 'package:braille_1/components/vibrate_button.dart';
+import 'package:braille_1/components/braille_board.dart';
 
 
 class SoundManager {
@@ -56,31 +56,7 @@ class _BrailleLetter extends State<BrailleLetter> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 100.0),
               ),
             ),
-            Container(
-              height: 350,
-              width: 200,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      VibrateButton(widget.vibrationButtonPattern[0]),
-                      VibrateButton(widget.vibrationButtonPattern[2]),
-                      VibrateButton(widget.vibrationButtonPattern[4])
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      VibrateButton(widget.vibrationButtonPattern[1]),
-                      VibrateButton(widget.vibrationButtonPattern[3]),
-                      VibrateButton(widget.vibrationButtonPattern[5])
-                    ],
-                  )
-                ],
-              ),
-            ),
+            BrailleBoard(widget.vibrationButtonPattern),
           ],
         ),
       ),
