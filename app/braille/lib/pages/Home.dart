@@ -55,17 +55,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void start() {
-    _speech
-        .listen(locale: 'en_US').then((result){
-          setState(() {
-            _isListening = result;
-          });
-    } );
+    _speech.listen(locale: 'en_US').then((result) {
+      setState(() {
+        _isListening = result;
+      });
+    });
   }
 
   void stop() => _speech.stop().then((result) {
-        setState(() => _isListening = result);
-      });
+    setState(() => _isListening = result);
+  });
 
   void sendHTTPRequest(url, api_key) {
     final Map<String, String> data = {"text": transcription};
@@ -104,13 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         margin: EdgeInsets.all(10.0),
         child: ListView(
           children: <Widget>[
-<<<<<<< HEAD
             Text(transcription),
-            RaisedButton(
-              onPressed: () {
-                if (_speechRecognitionAvailable && !_isListening) {
-                  start();
-=======
             GestureDetector(
               child: Stack(
                 children: <Widget>[
@@ -123,14 +116,12 @@ class _MyHomePageState extends State<MyHomePage> {
               onTapDown: (TapDownDetails details) {
                 if (_speechRecognitionAvailable && !_isListening) start();
               },
-              onTapUp: (TapUpDetails details) async{
-                if(transcription == ''){
+              onTapUp: (TapUpDetails details) async {
+                if (transcription == '') {
                   await _speech.cancel();
-                }
-                else{
+                } else {
                   stop();
                   sendHTTPRequest(_url, _api_key);
->>>>>>> 4aa4911f1bc85a26643896ac58301e45b5ce0525
                 }
               },
             ),
