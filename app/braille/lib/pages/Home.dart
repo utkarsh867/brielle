@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:speech_recognition/speech_recognition.dart';
 
 import 'braille_letter.dart';
 
@@ -23,7 +23,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-void letterlogic(String letter, BuildContext context,String url) {
+void letterlogic(String letter, BuildContext context, String url) {
   List<bool> vibbutton;
   letter = letter.toUpperCase();
   switch (letter) {
@@ -162,13 +162,53 @@ void letterlogic(String letter, BuildContext context,String url) {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (BuildContext context) => BrailleLetter(letter, vibbutton,url),
+      builder: (BuildContext context) => BrailleLetter(letter, vibbutton, url),
     ),
   );
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  SpeechRecognition _speech = SpeechRecognition();
+  bool _speechRecognitionAvailable = false;
+  bool _isListening = false;
+  String transcription = 'Hello';
   String _letter = "";
+
+  @override
+  initState() {
+    super.initState();
+    activateSpeechRecognizer();
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  void activateSpeechRecognizer() {
+    print('_MyAppState.activateSpeechRecognizer... ');
+    _speech = new SpeechRecognition();
+    _speech.setAvailabilityHandler(onSpeechAvailability);
+    //_speech.setCurrentLocaleHandler(onCurrentLocale);
+    _speech.setRecognitionStartedHandler(onRecognitionStarted);
+    _speech.setRecognitionResultHandler(onRecognitionResult);
+    _speech.setRecognitionCompleteHandler(onRecognitionComplete);
+    _speech
+        .activate()
+        .then((res) => setState(() => _speechRecognitionAvailable = res));
+  }
+
+  void onSpeechAvailability(bool result) =>
+      setState(() => _speechRecognitionAvailable = result);
+
+
+  void onRecognitionStarted() => setState(() => _isListening = true);
+
+  void onRecognitionResult(String text) => setState(() => transcription = text);
+
+  void onRecognitionComplete() => setState(() => _isListening = false);
+  void start() => _speech
+      .listen(locale: 'en_US')
+      .then((result) => print('_MyAppState.start => result $result'));
+  void stop() =>
+      _speech.stop().then((result) => setState(() => _isListening = result));
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -195,6 +235,34 @@ class _MyHomePageState extends State<MyHomePage> {
         margin: EdgeInsets.all(10.0),
         child: ListView(
           children: <Widget>[
+            Text(transcription),
+            RaisedButton(
+              onPressed: _speechRecognitionAvailable && !_isListening
+                        ? () => start()
+                        : null, 
+              child: Text('Listen'),
+            ),
+            RaisedButton(child:Text('Stop'),onPressed: (){
+              if(_isListening){
+                stop();
+              }
+              final Map<String, String> data = {"text": transcription};
+                print(json.encode(data));
+                http
+                    .post(
+                        'https://aj6yfs2f3b.execute-api.us-east-1.amazonaws.com/deploy/braille_python',
+                        headers: {
+                          'x-api-key':
+                              "F11Z6OB29PjLVp4lVb6o9aKQRUlfvRC1yc6GczSd"
+                        },
+                        body: json.encode(data))
+                    .then((http.Response response) {
+                  // final Map<String,dynamic> responseData=json.decode(response.body);
+                  print('Hello2');
+                  print(response.body);
+                  letterlogic(transcription, context, response.body);
+                });
+            }),
             TextField(
               decoration: InputDecoration(labelText: 'Letter'),
               onChanged: (String value) {
@@ -212,21 +280,23 @@ class _MyHomePageState extends State<MyHomePage> {
               textColor: Colors.white,
               onPressed: () {
                 //letterlogic(_letter, context);
-               //print('Hello1'+_letter);
-                final Map<String, String> data = {
-                   "text": _letter
-                  };
-                  print(json.encode(data));
-                http.post(
-                    'https://aj6yfs2f3b.execute-api.us-east-1.amazonaws.com/deploy/braille_python',
-                    headers: {'x-api-key':"F11Z6OB29PjLVp4lVb6o9aKQRUlfvRC1yc6GczSd"},
-                    body: json.encode(data)).then(( http.Response response) {
-                     // final Map<String,dynamic> responseData=json.decode(response.body);   
-                     print('Hello2');
-                      print(response.body);
-                      letterlogic(_letter, context,response.body);
-                    });
-                
+                //print('Hello1'+_letter);
+               /* final Map<String, String> data = {"text": _letter};
+                print(json.encode(data));
+                http
+                    .post(
+                        'https://aj6yfs2f3b.execute-api.us-east-1.amazonaws.com/deploy/braille_python',
+                        headers: {
+                          'x-api-key':
+                              "F11Z6OB29PjLVp4lVb6o9aKQRUlfvRC1yc6GczSd"
+                        },
+                        body: json.encode(data))
+                    .then((http.Response response) {
+                  // final Map<String,dynamic> responseData=json.decode(response.body);
+                  print('Hello2');
+                  print(response.body);
+                  letterlogic(_letter, context, response.body);
+                });*/
               },
             )
           ],
