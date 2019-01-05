@@ -17,8 +17,7 @@ class _MyHomePageState extends State<MyHomePage> {
   SpeechRecognition _speech = SpeechRecognition();
   bool _speechRecognitionAvailable = false;
   bool _isListening = false;
-  String transcription = 'Hello';
-  String _letter = "";
+  String transcription = '';
   String _url =
       'https://aj6yfs2f3b.execute-api.us-east-1.amazonaws.com/deploy/braille_python';
   String _api_key = "F11Z6OB29PjLVp4lVb6o9aKQRUlfvRC1yc6GczSd";
@@ -31,10 +30,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   void activateSpeechRecognizer() {
-    print('_MyAppState.activateSpeechRecognizer... ');
     _speech = new SpeechRecognition();
     _speech.setAvailabilityHandler(onSpeechAvailability);
-    //_speech.setCurrentLocaleHandler(onCurrentLocale);
     _speech.setRecognitionStartedHandler(onRecognitionStarted);
     _speech.setRecognitionResultHandler(onRecognitionResult);
     _speech.setRecognitionCompleteHandler(onRecognitionComplete);
@@ -50,16 +47,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void onRecognitionComplete() {
     setState(() => _isListening = false);
-    sendHTTPRequest(_url, _api_key);
   }
 
   void onRecognitionResult(String text) {
     setState(() => transcription = text);
   }
 
-  void start() => _speech
-      .listen(locale: 'en_US')
-      .then((result) => print('_MyAppState.start => result $result'));
+  void start() {
+    _speech
+        .listen(locale: 'en_US').then((result){
+          setState(() {
+            _isListening = result;
+          });
+    } );
+  }
 
   void stop() => _speech.stop().then((result) {
         setState(() => _isListening = result);
@@ -67,11 +68,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void sendHTTPRequest(url, api_key) {
     final Map<String, String> data = {"text": transcription};
-    print(json.encode(data));
     http
         .post(url, headers: {'x-api-key': api_key}, body: json.encode(data))
         .then((http.Response response) {
-      print(response.body);
       letterLogic(transcription, context, response.body);
     });
   }
@@ -99,22 +98,32 @@ class _MyHomePageState extends State<MyHomePage> {
           widget.title,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        elevation: 0,
       ),
       body: Container(
         margin: EdgeInsets.all(10.0),
         child: ListView(
           children: <Widget>[
-            Text(transcription),
-            RaisedButton(
-              onPressed: () {
-                if (_speechRecognitionAvailable && !_isListening) {
-                  start();
-                } else {
-                  activateSpeechRecognizer();
+            GestureDetector(
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    color: Colors.grey.shade100,
+                    child: Icon(Icons.mic, size: 400),
+                  ),
+                ],
+              ),
+              onTapDown: (TapDownDetails details) {
+                if (_speechRecognitionAvailable && !_isListening) start();
+              },
+              onTapUp: (TapUpDetails details) async{
+                if(transcription == ''){
+                  await _speech.cancel();
+                }
+                else{
+                  stop();
+                  sendHTTPRequest(_url, _api_key);
                 }
               },
-              child: Text('Listen'),
             ),
           ],
         ),
