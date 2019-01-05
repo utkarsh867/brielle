@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayer/audioplayer.dart';
+import 'package:braille_1/components/vibrate_button.dart';
 
-import '../vibrate_button.dart';
+
 class SoundManager {
   AudioPlayer audioPlayer = new AudioPlayer();
   Future playLocal(url) async {   
@@ -10,10 +11,13 @@ class SoundManager {
 }
 
 class BrailleLetter extends StatefulWidget {
-  final List<bool> vibbutton;
+
+  BrailleLetter(this.letter, this.vibrationButtonPattern,this.audioUrl);
+
+  final List<bool> vibrationButtonPattern;
   final String letter;
   final String audioUrl;
-  BrailleLetter(this.letter, this.vibbutton,this.audioUrl);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -61,17 +65,17 @@ class _BrailleLetter extends State<BrailleLetter> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      VibrateButton(widget.vibbutton[0]),
-                      VibrateButton(widget.vibbutton[2]),
-                      VibrateButton(widget.vibbutton[4])
+                      VibrateButton(widget.vibrationButtonPattern[0]),
+                      VibrateButton(widget.vibrationButtonPattern[2]),
+                      VibrateButton(widget.vibrationButtonPattern[4])
                     ],
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      VibrateButton(widget.vibbutton[1]),
-                      VibrateButton(widget.vibbutton[3]),
-                      VibrateButton(widget.vibbutton[5])
+                      VibrateButton(widget.vibrationButtonPattern[1]),
+                      VibrateButton(widget.vibrationButtonPattern[3]),
+                      VibrateButton(widget.vibrationButtonPattern[5])
                     ],
                   )
                 ],
