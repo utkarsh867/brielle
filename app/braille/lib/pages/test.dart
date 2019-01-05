@@ -12,12 +12,8 @@ class Test extends StatefulWidget {
   int qno, score;
   String title;
   static var rng = new Random();
-
   //Letters letterPattern = Letters(letter);
   Test(this.qno, this.score, this.title);
-  List<bool> vibrationButtonPattern =
-      Letters(String.fromCharCode(rng.nextInt(26) + 65).toString())
-          .vibrationButtonPattern;
 
   @override
   State<StatefulWidget> createState() {
@@ -27,6 +23,11 @@ class Test extends StatefulWidget {
 }
 
 class _Test extends State<Test> {
+  static var rng = new Random();
+
+  static int rno = rng.nextInt(26) + 65;
+  List<bool> vibrationButtonPattern =
+      Letters(String.fromCharCode(rno)).vibrationButtonPattern;
   SpeechRecognition _speech = SpeechRecognition();
   bool _speechRecognitionAvailable = false;
   bool _isListening = false;
@@ -35,8 +36,9 @@ class _Test extends State<Test> {
     super.initState();
     activateSpeechRecognizer();
     Tts.speak(
-        'Welcome to the Test.In this test you are required to tell the letters after 5 seconds ');  
+        'Welcome to the Test.In this test you are required to tell the letters after 5 seconds ');
   }
+
   void activateSpeechRecognizer() {
     _speech = new SpeechRecognition();
     _speech.setAvailabilityHandler(onSpeechAvailability);
@@ -70,18 +72,15 @@ class _Test extends State<Test> {
   }
 
   void stop() => _speech.stop().then((result) {
-    setState(() => _isListening = result);
-  });
+        setState(() => _isListening = result);
+      });
 
-
-  String a = 'Bye';
-  var rng = new Random();
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(milliseconds: 10000), () {
+    /*Future.delayed(const Duration(milliseconds: 10000), () {
       Tts.speak('Time up ');
       start();
-    });
+    });*/
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
@@ -96,29 +95,46 @@ class _Test extends State<Test> {
         child: ListView(
           children: <Widget>[
             RaisedButton(
-              onPressed: () => Tts.speak(a),
-              child: new Text('Say Hello'),
-            ),
-            RaisedButton(
               onPressed: () {
-                setState(() {
-                  widget.qno++;
-                  widget.vibrationButtonPattern = Letters(
-                          String.fromCharCode(rng.nextInt(26) + 65).toString())
-                      .vibrationButtonPattern;
-                });
-                if (widget.qno > 5) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MyHomePage(title: widget.title),
-                    ),
-                  );
-                }
+                Tts.speak('Time up ');
+                if (_speechRecognitionAvailable && !_isListening) start();
               },
               child: Text('Continue'),
             ),
-            BrailleBoard(widget.vibrationButtonPattern)
+            RaisedButton(
+              child: Text('Stop'),
+              onPressed: () async {
+                if (transcription == '') {
+                  await _speech.cancel();
+                } else {
+                  stop();
+                  if (transcription.toUpperCase() == String.fromCharCode(rno)) {
+                    Tts.speak('Correct!');
+                    setState(() {
+                      widget.score++;
+                    });
+                  } else {
+                    Tts.speak('Incorrect!');
+                  }
+                  setState(() {
+                    widget.qno++;
+                    vibrationButtonPattern =
+                        Letters(String.fromCharCode(rng.nextInt(26)).toString())
+                            .vibrationButtonPattern;
+                    if (widget.qno > 5) {
+                      Tts.speak('Awesome but the game is over!Your score is'+widget.score.toString()+' out of 5.');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyHomePage(title: widget.title),
+                        ),
+                      );
+                    }
+                  });
+                }
+              },
+            ),
+            BrailleBoard(vibrationButtonPattern)
           ],
         ),
       ),
