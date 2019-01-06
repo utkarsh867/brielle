@@ -7,7 +7,6 @@ import 'braille_letter.dart';
 import 'test.dart';
 import 'dart:math';
 
-
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
@@ -33,22 +32,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<bool> _onWillPop() {
     return showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: new Text('Are you sure?'),
-        content: new Text('Do you want to exit an App'),
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: new Text('No'),
-          ),
-          new FlatButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: new Text('Yes'),
-          ),
-        ],
-      ),
-    ) ?? false;
+          context: context,
+          builder: (context) => new AlertDialog(
+                title: new Text('Are you sure?'),
+                content: new Text('Do you want to exit an App'),
+                actions: <Widget>[
+                  new FlatButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: new Text('No'),
+                  ),
+                  new FlatButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: new Text('Yes'),
+                  ),
+                ],
+              ),
+        ) ??
+        false;
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -85,21 +85,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void stop() => _speech.stop().then((result) {
-    setState(() => _isListening = result);
-  });
+        setState(() => _isListening = result);
+      });
 
   void sendHTTPRequest(url, api_key) {
     final Map<String, String> data = {"text": transcription};
-    http
-        .post(url, headers: {'x-api-key': api_key}, body: json.encode(data))
-       /* .then((http.Response response) {
+    http.post(url, headers: {'x-api-key': api_key}, body: json.encode(data))
+        /* .then((http.Response response) {
       
-    })*/;
- 
-  letterLogic(transcription, context/*, 'www.google.com'*/);
+    })*/
+        ;
+
+    letterLogic(transcription, context /*, 'www.google.com'*/);
   }
 
-  void letterLogic(String letter, BuildContext context/*, String url*/) {
+  void letterLogic(String letter, BuildContext context /*, String url*/) {
     Letters letterPattern = Letters(letter);
     List<bool> vibrationButtonPattern = letterPattern.vibrationButtonPattern;
 
@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              BrailleLetter(letter, vibrationButtonPattern/*, url*/),
+              BrailleLetter(letter, vibrationButtonPattern /*, url*/),
         ),
       );
     }

@@ -48,14 +48,14 @@ class _BrailleLetter extends State<BrailleLetter> {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+          automaticallyImplyLeading: false,
           title: Text(
-        'Braille',
-        style: TextStyle(fontWeight: FontWeight.bold),
-      )),
+            'Braille',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          )),
       body: Center(
         child: GestureDetector(
-          onDoubleTap: (){
+          onDoubleTap: () {
             print('Hello');
             Navigator.pop(
                 context,

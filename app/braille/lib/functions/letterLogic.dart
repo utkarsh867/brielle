@@ -4,13 +4,12 @@ class Letters {
   List<bool> _vibrationButtonPattern;
   String _letter;
 
-  List<bool> get vibrationButtonPattern  {
+  List<bool> get vibrationButtonPattern {
     getLetterLogic();
     return _vibrationButtonPattern;
   }
 
   void getLetterLogic() {
-
     _letter = _letter.toUpperCase();
 
     switch (_letter) {

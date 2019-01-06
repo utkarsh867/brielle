@@ -34,9 +34,6 @@ class _Test extends State<Test> {
       Tts.speak(
           'Welcome to the Test.In this test you are required to tell the letters after 5 seconds ');
     }
-    else{
-      Tts.speak('Loading a new question');
-    }
   }
 
   void activateSpeechRecognizer() {
@@ -121,14 +118,8 @@ class _Test extends State<Test> {
                   } else {
                     Tts.speak('Incorrect!');
                   }
-                  /* setState(() {
-                    widget.qno++;
-                    vibrationButtonPattern =
-                        Letters(String.fromCharCode(rng.nextInt(26)).toString())
-                            .vibrationButtonPattern;
-                    
-                  });*/
-                  if (widget.qno > 3) {
+                  Future.delayed(Duration(seconds: 3)).then((_){
+                    if (widget.qno > 3) {
                     Tts.speak('Awesome but the game is over!Your score is' +
                         widget.score.toString() +
                         ' out of 5.');
@@ -140,7 +131,7 @@ class _Test extends State<Test> {
                     );
                   } else {
                     var rng = new Random();
-
+                    Tts.speak('Loading a new question');    
                     int rno = rng.nextInt(26) + 65;
                     Navigator.pushReplacement(
                       context,
@@ -149,6 +140,7 @@ class _Test extends State<Test> {
                       ),
                     );
                   }
+                  });
                 }
               },
             ),
