@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayer/audioplayer.dart';
+import '../components/braille_board.dart';
+import 'package:tts/tts.dart';
+import 'package:swipedetector/swipedetector.dart';
 
-import '../vibrate_button.dart';
+import 'Home.dart';
+
 class SoundManager {
   AudioPlayer audioPlayer = new AudioPlayer();
-  Future playLocal(url) async {   
+  Future playLocal(url) async {
     await audioPlayer.play(url);
   }
 }
 
 class BrailleLetter extends StatefulWidget {
-  final List<bool> vibbutton;
+  BrailleLetter(
+    this.letter,
+    this.vibrationButtonPattern,
+    this.audioUrl
+  );
+
+  final List<bool> vibrationButtonPattern;
   final String letter;
   final String audioUrl;
-  BrailleLetter(this.letter, this.vibbutton,this.audioUrl);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -21,63 +31,49 @@ class BrailleLetter extends StatefulWidget {
   }
 
   void onLoad(BuildContext context) {
-
     SoundManager soundManager = new SoundManager();
-
     soundManager.playLocal(audioUrl);
   }
 }
 
 class _BrailleLetter extends State<BrailleLetter> {
-  
   void initState() {
     super.initState();
     widget.onLoad(context);
-  } 
+   // Tts.speak(widget.letter);
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Text(
-        'Braille',
-        style: TextStyle(fontWeight: FontWeight.bold),
-      )),
+            'Braille',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          )),
       body: Center(
-        child: Column(
-          children: <Widget>[
-            Container(
-              child: Text(
-                widget.letter,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 100.0),
+        child: GestureDetector(
+          onDoubleTap: () {
+            print('Hello');
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MyHomePage(title: 'Braille')));
+          },
+          child: Column(
+            children: <Widget>[
+              Container(
+                child: Text(
+                  widget.letter,
+                  style:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 100.0),
+                ),
               ),
-            ),
-            Container(
-              height: 350,
-              width: 200,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      VibrateButton(widget.vibbutton[0]),
-                      VibrateButton(widget.vibbutton[2]),
-                      VibrateButton(widget.vibbutton[4])
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      VibrateButton(widget.vibbutton[1]),
-                      VibrateButton(widget.vibbutton[3]),
-                      VibrateButton(widget.vibbutton[5])
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ],
+              BrailleBoard(widget.vibrationButtonPattern),
+            ],
+          ),
         ),
       ),
     );
