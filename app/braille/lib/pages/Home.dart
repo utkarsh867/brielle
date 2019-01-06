@@ -98,15 +98,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void sendHTTPRequest(url, api_key) {
     final Map<String, String> data = {"text": transcription};
     http.post(url, headers: {'x-api-key': api_key}, body: json.encode(data))
-        /* .then((http.Response response) {
-      
-    })*/
+         .then((http.Response response) {
+      letterLogic(transcription, context , response.body);
+    })
         ;
 
-    letterLogic(transcription, context /*, 'www.google.com'*/);
+    
   }
 
-  void letterLogic(String letter, BuildContext context /*, String url*/) {
+  void letterLogic(String letter, BuildContext context , String url) {
     Letters letterPattern = Letters(letter);
     List<bool> vibrationButtonPattern = letterPattern.vibrationButtonPattern;
 
@@ -115,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              BrailleLetter(letter, vibrationButtonPattern /*, url*/),
+              BrailleLetter(letter, vibrationButtonPattern , url),
         ),
       );
     }

@@ -17,12 +17,12 @@ class BrailleLetter extends StatefulWidget {
   BrailleLetter(
     this.letter,
     this.vibrationButtonPattern,
-    /*this.audioUrl*/
+    this.audioUrl
   );
 
   final List<bool> vibrationButtonPattern;
   final String letter;
-  /*final String audioUrl;*/
+  final String audioUrl;
 
   @override
   State<StatefulWidget> createState() {
@@ -32,15 +32,15 @@ class BrailleLetter extends StatefulWidget {
 
   void onLoad(BuildContext context) {
     SoundManager soundManager = new SoundManager();
-    //soundManager.playLocal(audioUrl);
+    soundManager.playLocal(audioUrl);
   }
 }
 
 class _BrailleLetter extends State<BrailleLetter> {
   void initState() {
     super.initState();
-    //widget.onLoad(context);
-    Tts.speak(widget.letter);
+    widget.onLoad(context);
+   // Tts.speak(widget.letter);
   }
 
   @override
@@ -57,7 +57,7 @@ class _BrailleLetter extends State<BrailleLetter> {
         child: GestureDetector(
           onDoubleTap: () {
             print('Hello');
-            Navigator.pop(
+            Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                     builder: (context) => MyHomePage(title: 'Braille')));
