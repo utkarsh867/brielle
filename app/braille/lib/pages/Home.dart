@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'package:speech_recognition/speech_recognition.dart';
 import 'package:braille_1/functions/letterLogic.dart';
 import 'braille_letter.dart';
-import 'test.dart';
-import 'dart:math';
+import 'package:simple_permissions/simple_permissions.dart';
+// import 'test.dart';
+// import 'dart:math';
+
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -27,6 +29,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     super.initState();
+    SimplePermissions.checkPermission(Permission.RecordAudio).then((result){
+      if(!result){
+        SimplePermissions.requestPermission(Permission.RecordAudio);
+      }
+    });
     activateSpeechRecognizer();
   }
 
@@ -152,20 +159,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                 },
               ),
-              RaisedButton(
-                onPressed: () {
-                  var rng = new Random();
 
-                  int rno = rng.nextInt(26) + 65;
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Test(0, 0, rno, widget.title),
-                    ),
-                  );
-                },
-                child: Text('Test'),
-              )
+              // TODO: Remove bugs from Test
+              // RaisedButton(
+              //   onPressed: () {
+              //     var rng = new Random();
+
+              //     int rno = rng.nextInt(26) + 65;
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => Test(0, 0, rno, widget.title),
+              //       ),
+              //     );
+              //   },
+              //   child: Text('Test'),
+              // )
             ],
           ),
         ),
