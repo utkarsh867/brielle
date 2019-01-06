@@ -5,6 +5,8 @@ import 'package:speech_recognition/speech_recognition.dart';
 import 'package:braille_1/functions/letterLogic.dart';
 import 'braille_letter.dart';
 import 'test.dart';
+import 'dart:math';
+
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -70,12 +72,14 @@ class _MyHomePageState extends State<MyHomePage> {
     final Map<String, String> data = {"text": transcription};
     http
         .post(url, headers: {'x-api-key': api_key}, body: json.encode(data))
-        .then((http.Response response) {
-      letterLogic(transcription, context, response.body);
-    });
+       /* .then((http.Response response) {
+      
+    })*/;
+ 
+  letterLogic(transcription, context/*, 'www.google.com'*/);
   }
 
-  void letterLogic(String letter, BuildContext context, String url) {
+  void letterLogic(String letter, BuildContext context/*, String url*/) {
     Letters letterPattern = Letters(letter);
     List<bool> vibrationButtonPattern = letterPattern.vibrationButtonPattern;
 
@@ -84,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              BrailleLetter(letter, vibrationButtonPattern, url),
+              BrailleLetter(letter, vibrationButtonPattern/*, url*/),
         ),
       );
     }
@@ -94,6 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           widget.title,
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -127,10 +132,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             RaisedButton(
               onPressed: () {
+                var rng = new Random();
+
+                int rno = rng.nextInt(26) + 65;
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Test(0, 0, widget.title),
+                    builder: (context) => Test(0, 0, rno, widget.title),
                   ),
                 );
               },

@@ -9,12 +9,10 @@ import 'package:speech_recognition/speech_recognition.dart';
 import 'Home.dart';
 
 class Test extends StatefulWidget {
-  int qno, score;
-  String title;
-  static var rng = new Random();
+  int qno, score,rno;
+  String title;  
   //Letters letterPattern = Letters(letter);
-  Test(this.qno, this.score, this.title);
-
+  Test(this.qno, this.score,this.rno, this.title);
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -23,11 +21,8 @@ class Test extends StatefulWidget {
 }
 
 class _Test extends State<Test> {
-  static var rng = new Random();
-
-  static int rno = rng.nextInt(26) + 65;
-  List<bool> vibrationButtonPattern =
-      Letters(String.fromCharCode(rno)).vibrationButtonPattern;
+  
+  
   SpeechRecognition _speech = SpeechRecognition();
   bool _speechRecognitionAvailable = false;
   bool _isListening = false;
@@ -35,8 +30,13 @@ class _Test extends State<Test> {
   void initState() {
     super.initState();
     activateSpeechRecognizer();
-    Tts.speak(
-        'Welcome to the Test.In this test you are required to tell the letters after 5 seconds ');
+    if (widget.qno == 0) {
+      Tts.speak(
+          'Welcome to the Test.In this test you are required to tell the letters after 5 seconds ');
+    }
+    else{
+      Tts.speak('Loading a new question');
+    }
   }
 
   void activateSpeechRecognizer() {
@@ -77,6 +77,9 @@ class _Test extends State<Test> {
 
   @override
   Widget build(BuildContext context) {
+    int sco = widget.score;
+    List<bool> vibrationButtonPattern =
+      Letters(String.fromCharCode(widget.rno)).vibrationButtonPattern;
     /*Future.delayed(const Duration(milliseconds: 10000), () {
       Tts.speak('Time up ');
       start();
@@ -84,6 +87,7 @@ class _Test extends State<Test> {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           widget.title,
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -108,29 +112,43 @@ class _Test extends State<Test> {
                   await _speech.cancel();
                 } else {
                   stop();
-                  if (transcription.toUpperCase() == String.fromCharCode(rno)) {
-                    Tts.speak('Correct!');
-                    setState(() {
+                  if (transcription.toUpperCase() == String.fromCharCode(widget.rno)) {
+                    Tts.speak('Correct');
+                    /*setState(() {
                       widget.score++;
-                    });
+                    });*/
+                    sco++;
                   } else {
                     Tts.speak('Incorrect!');
                   }
-                  setState(() {
+                  /* setState(() {
                     widget.qno++;
                     vibrationButtonPattern =
                         Letters(String.fromCharCode(rng.nextInt(26)).toString())
                             .vibrationButtonPattern;
-                    if (widget.qno > 5) {
-                      Tts.speak('Awesome but the game is over!Your score is'+widget.score.toString()+' out of 5.');
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MyHomePage(title: widget.title),
-                        ),
-                      );
-                    }
-                  });
+                    
+                  });*/
+                  if (widget.qno > 3) {
+                    Tts.speak('Awesome but the game is over!Your score is' +
+                        widget.score.toString() +
+                        ' out of 5.');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyHomePage(title: widget.title),
+                      ),
+                    );
+                  } else {
+                    var rng = new Random();
+
+                    int rno = rng.nextInt(26) + 65;
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Test(widget.qno+1, sco, rno,widget.title),
+                      ),
+                    );
+                  }
                 }
               },
             ),
@@ -141,3 +159,4 @@ class _Test extends State<Test> {
     );
   }
 }
+
