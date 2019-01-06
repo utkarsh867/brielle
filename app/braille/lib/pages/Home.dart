@@ -31,6 +31,26 @@ class _MyHomePageState extends State<MyHomePage> {
     activateSpeechRecognizer();
   }
 
+  Future<bool> _onWillPop() {
+    return showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Text('Are you sure?'),
+        content: new Text('Do you want to exit an App'),
+        actions: <Widget>[
+          new FlatButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: new Text('No'),
+          ),
+          new FlatButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: new Text('Yes'),
+          ),
+        ],
+      ),
+    ) ?? false;
+  }
+
   // Platform messages are asynchronous, so we initialize in an async method.
   void activateSpeechRecognizer() {
     _speech = new SpeechRecognition();
@@ -96,55 +116,58 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          widget.title,
-          style: TextStyle(fontWeight: FontWeight.bold),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text(
+            widget.title,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
-      ),
-      body: Container(
-        margin: EdgeInsets.all(10.0),
-        child: ListView(
-          children: <Widget>[
-            Text(transcription),
-            GestureDetector(
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    color: Colors.grey.shade100,
-                    child: Icon(Icons.mic, size: 400),
-                  ),
-                ],
+        body: Container(
+          margin: EdgeInsets.all(10.0),
+          child: ListView(
+            children: <Widget>[
+              Text(transcription),
+              GestureDetector(
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      color: Colors.grey.shade100,
+                      child: Icon(Icons.mic, size: 400),
+                    ),
+                  ],
+                ),
+                onTapDown: (TapDownDetails details) {
+                  if (_speechRecognitionAvailable && !_isListening) start();
+                },
+                onTapUp: (TapUpDetails details) async {
+                  if (transcription == '') {
+                    await _speech.cancel();
+                  } else {
+                    stop();
+                    sendHTTPRequest(_url, _api_key);
+                  }
+                },
               ),
-              onTapDown: (TapDownDetails details) {
-                if (_speechRecognitionAvailable && !_isListening) start();
-              },
-              onTapUp: (TapUpDetails details) async {
-                if (transcription == '') {
-                  await _speech.cancel();
-                } else {
-                  stop();
-                  sendHTTPRequest(_url, _api_key);
-                }
-              },
-            ),
-            RaisedButton(
-              onPressed: () {
-                var rng = new Random();
+              RaisedButton(
+                onPressed: () {
+                  var rng = new Random();
 
-                int rno = rng.nextInt(26) + 65;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Test(0, 0, rno, widget.title),
-                  ),
-                );
-              },
-              child: Text('Test'),
-            )
-          ],
+                  int rno = rng.nextInt(26) + 65;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Test(0, 0, rno, widget.title),
+                    ),
+                  );
+                },
+                child: Text('Test'),
+              )
+            ],
+          ),
         ),
       ),
     );

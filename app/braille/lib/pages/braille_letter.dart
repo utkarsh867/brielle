@@ -32,7 +32,6 @@ class BrailleLetter extends StatefulWidget {
 
   void onLoad(BuildContext context) {
     SoundManager soundManager = new SoundManager();
-
     //soundManager.playLocal(audioUrl);
   }
 }
@@ -58,7 +57,7 @@ class _BrailleLetter extends State<BrailleLetter> {
         child: GestureDetector(
           onDoubleTap: (){
             print('Hello');
-            Navigator.pushReplacement(
+            Navigator.pop(
                 context,
                 MaterialPageRoute(
                     builder: (context) => MyHomePage(title: 'Braille')));
